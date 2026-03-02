@@ -32,7 +32,7 @@ Subscribe/clone the dependencies, drop this addon in `garrysmod/addons/`, enable
 | `_rt_WPDepth` | `$texture1` | `s1` | ワールド座標の復元 + スカイ判定用 |
 | `_rt_NormalsTangents` | `$texture2` | `s2` | ホライゾン積分の基準となる法線用 |
 
-下記の二つは、デコードに成功した。
+ついでに、いったん素直にデコードしてみて、どんな画像になってるか目視でチェックしとく。
 ```hlsl
 #include "common.hlsl"
 
@@ -67,11 +67,9 @@ float4 main(PS_INPUT I) : COLOR
 ```
 ![screenshot](img\DecodeDepth.jpg)
 
-### 実装方法
-ぶっちゃけSSAOなら(影は0～1で収まるため)RGBA8888で十分だが、
-SSGIなら多少重くてもRGBA16161616Fのテクスチャフォーマットを使うべき。
+ぶっちゃけSSAOなら(影は0～1で収まるため)RGBA8888で十分だが、SSGIなら多少重くてもRGBA16161616Fのテクスチャフォーマットを使うべき。
 ```lua
--- 解像度を1/4（縦横0.5倍）にすることで、VRAMくんが酷い目にあうのを阻止する
+-- 解像度を1/4（縦横0.5倍）にすることで、VRAMくんが酷い目にあわなくなる
 local ssgi_rt = GetRenderTargetEx("_rt_SSGI", ScrW()*0.5,ScrH()*0.5,
     RT_SIZE_LITERAL,
     MATERIAL_RT_DEPTH_NONE,
@@ -80,17 +78,33 @@ local ssgi_rt = GetRenderTargetEx("_rt_SSGI", ScrW()*0.5,ScrH()*0.5,
     IMAGE_FORMAT_RGBA16161616F
 )
 ```
+
+RTに貯めず直接描いちゃうと「元画像 + ずれたサンプル」がスクリーンに乗って輪郭だけ浮いて見えてしまうので、これで対策する。
+```lua
+local function Draw()
+    render.PushRenderTarget(ssgi_rt)
+    render.Clear(0,0,0,0)
+    render.SetMaterial(ssgi_mat)
+    render.DrawScreenQuad()
+    render.PopRenderTarget()
+-- 合成用シェーダーはssgi_composite_ps20b.hlsl
+    render.SetMaterial(ssgi_composite)
+    render.DrawScreenQuad()
+end
+```
+
+
+
+
+
+
+
+
+
+
+
+
+also make discard by sky 
 理想は解像度を1/8にすることだが、アップスケーリングの手法が未知なため後回し。
-
-
-
-
-
-
-
-
-
-
-also make discard by sky
 if tex2D(WPDepth, uv).a == 0.00025 discard;
 

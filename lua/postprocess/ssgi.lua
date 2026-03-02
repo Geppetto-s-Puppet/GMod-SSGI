@@ -39,6 +39,17 @@ local ssgi_mat = CreateMaterial("ssgi_effect", "screenspace_general", {
     ["$vertextransform"]        = "1",
 })
 
+local ssgi_composite = CreateMaterial("ssgi_composite", "screenspace_general", {
+    ["$pixshader"]           = "ssgi_composite_ps20b",
+    ["$basetexture"]         = "_rt_FullFrameFB",
+    ["$texture1"]            = "_rt_SSGI",
+    ["$c0_x"]                = "3.0",  -- intensity
+    ["$linearread_basetexture"] = "1",
+    ["$linearread_texture1"]    = "1",
+    ["$ignorez"]             = "1",
+    ["$vertextransform"]     = "1",
+})
+
 local ssgi_rt = GetRenderTargetEx("_rt_SSGI", ScrW()*0.5, ScrH()*0.5,
     RT_SIZE_LITERAL,
     MATERIAL_RT_DEPTH_NONE,
@@ -47,16 +58,14 @@ local ssgi_rt = GetRenderTargetEx("_rt_SSGI", ScrW()*0.5, ScrH()*0.5,
     IMAGE_FORMAT_RGBA16161616F
 )
 
--- local function Draw()
---     render.PushRenderTarget(ssgi_rt)
---     render.Clear(0,0,0,0)
---     render.SetMaterial(ssgi_mat)-- render.SetMaterial(ssgi_upsample)
---     render.DrawScreenQuad()
---     render.PopRenderTarget()
--- end
 local function Draw()
-    -- RTは一旦無視、シェーダーが動くか直接確認
+    render.PushRenderTarget(ssgi_rt)
+    render.Clear(0,0,0,0)
     render.SetMaterial(ssgi_mat)
+    render.DrawScreenQuad()
+    render.PopRenderTarget()
+
+    render.SetMaterial(ssgi_composite)
     render.DrawScreenQuad()
 end
 
