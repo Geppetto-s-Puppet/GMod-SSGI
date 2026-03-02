@@ -3,7 +3,6 @@
 README.md export-ignore
 LICENSE export-ignore
 
-img/ export-ignore
 bin/ export-ignore
 common.hlsl export-ignore
 ssgi_ps2x.hlsl export-ignore

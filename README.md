@@ -51,7 +51,7 @@ float4 main(PS_INPUT I) : COLOR
     return float4(N * 0.5 + 0.5, 1.0);  // 法線を色として表示
 }
 ```
-![screenshot](img\DecodeNormal.jpg)
+![Image](https://github.com/user-attachments/assets/5b9582e1-0932-4fe2-b9eb-5f42264dfd4a)
 ```hlsl
 #include "common.hlsl"
 
@@ -65,7 +65,7 @@ float4 main(PS_INPUT I) : COLOR
     return float4(depth, depth, depth, 1.0);
 }
 ```
-![screenshot](img\DecodeDepth.jpg)
+![Image](https://github.com/user-attachments/assets/1e0d15b4-e987-453b-8282-b77adeed5501)
 
 ぶっちゃけSSAOなら(影は0～1で収まるため)RGBA8888で十分だが、SSGIなら多少重くてもRGBA16161616Fのテクスチャフォーマットを使うべき。
 ```lua
