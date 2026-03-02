@@ -51,7 +51,7 @@ local ssgi_rt_b = GetRenderTargetEx("_rt_SSGI_B", RT_W, RT_H,
 
 -- 1) GI 本体シェーダー
 local ssgi_mat = CreateMaterial("ssgi_effect", "screenspace_general", {
-    ["$pixshader"]              = "ssgi_ps20b",
+    ["$pixshader"]              = "ssgi_ps30",
     ["$basetexture"]            = "_rt_FullFrameFB",   -- s0: 光源色
     ["$texture1"]               = "_rt_WPDepth",       -- s1: ワールド座標 + 深度
     ["$texture2"]               = "_rt_NormalsTangents", -- s2: 法線
@@ -67,7 +67,7 @@ local ssgi_mat = CreateMaterial("ssgi_effect", "screenspace_general", {
 
 -- 2) À-Trous デノイザー
 local atrous_mat = CreateMaterial("ssgi_atrous", "screenspace_general", {
-    ["$pixshader"]              = "ssgi_atrous_ps20b",
+    ["$pixshader"]              = "ssgi_atrous_ps30",
     ["$basetexture"]            = "_rt_SSGI_A",         -- s0: GI入力（動的に差し替え）
     ["$texture1"]               = "_rt_WPDepth",        -- s1: エッジ停止用 depth
     ["$texture2"]               = "_rt_NormalsTangents", -- s2: エッジ停止用 法線
@@ -81,7 +81,7 @@ local atrous_mat = CreateMaterial("ssgi_atrous", "screenspace_general", {
 
 -- 3) 合成シェーダー
 local ssgi_composite = CreateMaterial("ssgi_composite", "screenspace_general", {
-    ["$pixshader"]              = "ssgi_composite_ps20b",
+    ["$pixshader"]              = "ssgi_composite_ps30",
     ["$basetexture"]            = "_rt_FullFrameFB",   -- s0: 元画像
     ["$texture1"]               = "_rt_SSGI_A",        -- s1: デノイズ済みGI（動的に差し替え）
     ["$c0_x"]                   = "3.0",   -- GI強度
