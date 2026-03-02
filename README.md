@@ -16,11 +16,16 @@ Subscribe/clone the dependencies, drop this addon in `garrysmod/addons/`, enable
 
 
 
+
+
+
+
+
+
+
+
+
 Source Engine Shader SDK: https://github.com/ficool2/sdk_screenspace_shaders
-
-
-
-
 
 ### Papers
 - https://knarkowicz.wordpress.com/2014/04/16/octahedron-normal-vector-encoding/

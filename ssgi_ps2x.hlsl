@@ -13,6 +13,7 @@ sampler s3 : register(s3); // _rt_ResolvedFullFrameDepth
 float4 c0 : register(c0);
 float4 c1 : register(c1);
 
+
 // Octahedron Normal Decoding (公式)
 float3 Decode(float2 f)
 {

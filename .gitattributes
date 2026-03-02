@@ -1,0 +1,8 @@
+.gitattributes export-ignore
+
+README.md export-ignore
+LICENSE export-ignore
+
+common.hlsl export-ignore
+ssgi_ps2x.hlsl export-ignore
+build_single_shader.bat export-ignore
