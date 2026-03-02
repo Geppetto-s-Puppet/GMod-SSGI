@@ -1,7 +1,7 @@
 # Screen Space Global Illumination (SSGI) for Garry's Mod
 A real-time post-processing addon implementing **SSGI** in Garry's Mod using:
-- [Visibility Bitmask](https://arxiv.org/pdf/2301.11376) (Therrien et al., 2023) for horizon-based indirect lighting  
-- [Edge-Avoiding À-Trous Wavelet Transform](https://jo.dreggn.org/home/2010_atrous.pdf) (Dammertz et al., 2010) as denoiser
+* [Visibility Bitmask](https://arxiv.org/pdf/2301.11376) (Therrien et al., 2023) for horizon-based indirect lighting  
+* [Edge-Avoiding À-Trous Wavelet Transform](https://jo.dreggn.org/home/2010_atrous.pdf) (Dammertz et al., 2010) as denoiser
 
 ### Requirements
 - [Garry's Mod](https://steamcommunity.com/app/4000) — Use the `x86-64 Chromium + 64-bit binaries` version.
@@ -11,6 +11,33 @@ A real-time post-processing addon implementing **SSGI** in Garry's Mod using:
 ### Quick Setup
 Subscribe/clone the dependencies, drop this addon in `garrysmod/addons/`, enable in menu, and enjoy improved lighting!
 
+### Special Thanks to:
+* **Evgeny Akabenko** (GShader Library developer) — For providing almost all the valuable information
+* **LVutner** (S.T.A.L.K.E.R. Anomaly developer) — For the 0.5 upsampling code ported from DX10/DX11 to DX9
+* **ficool2** (Source Shader SDK developer) — For the compiler and bin files (which are mixed into this repo)
+
+# 以下：俺用メモ（他人に読ます気ない）
+| バッファ名 | チャンネル／内容／エンコード |
+|---|---|
+| _rt_NormalsTangents | `.RG` 法線（オクタヘドロン符号化）　`.B` 接線（ダイヤモンド符号化）、`.A` 符号（右手系か否か） |
+| _rt_WPDepth | `.RGB` ワールド座標の逆数　`.A` 線形深度 |
+| _rt_Bumps | `.RGB` バンプマップ　`.A` スペキュラマスク |
+| _rt_FullFrameFB | ふっつーに入力として使うGMOD画面の入力（デフォのMSAAをオフっとけ、SMAAかFXAA推奨） |
+
+### 実装方法
+ぶっちゃけSSAOなら(影は0～1で収まるため)RGBA8888で十分だが、
+SSGIなら多少重くてもRGBA16161616Fのテクスチャフォーマットを使うべき。
+```lua
+-- 解像度を1/4（縦横0.5倍）にすることで、VRAMくんが酷い目にあうのを阻止する
+local ssgi_rt = GetRenderTargetEx("_rt_SSGI", ScrW()*0.5,ScrH()*0.5,
+    RT_SIZE_LITERAL,
+    MATERIAL_RT_DEPTH_NONE,
+    bit.bor(4,8,16,256,512,8388608),
+    0,
+    IMAGE_FORMAT_RGBA16161616F
+)
+```
+理想は解像度を1/8にすることだが、アップスケーリングの手法が未知なので後回し
 
 
 
@@ -21,69 +48,6 @@ Subscribe/clone the dependencies, drop this addon in `garrysmod/addons/`, enable
 
 
 
-
-
-
-
-Source Engine Shader SDK: https://github.com/ficool2/sdk_screenspace_shaders
-
-### Papers
-- https://knarkowicz.wordpress.com/2014/04/16/octahedron-normal-vector-encoding/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-１．を用いて、下記のバッファを取得し、圧縮方法を調査する。
-- **_rt_NormalsTangents** — `.RG` Normals, `.B` Tangents, `.A` Sign
-- **_rt_WPDepth** — a
-- **_rt_Bumps** — a
-- **_rt_FullFrameFB** — a
-
-２．
-
-
-
-
-
-u should downsample SSGI
-native render of SSGI will kill FPS
-u can render it in 0.5 size rendertarget
-u can make RGBA16161616F rendertarget
-RGB will be color, Alpha will be depth from WPDepth
-its better to use RGBA8888. and pack depth .as GBA. but this is good for SSAO. and grey scale result
-so SSGI have colors
-
-thats why we cant use RGBA8888 with packing depth
-thats why u can use RGBA16F as me
-i use it for SSAO, SSSS, Volumetric light
-u can make upsampling from 0.25
-but code will be huge. and i dont know how to make it
-
-like 0.25 upsampling need more taps
-and more logic
-
-u can try 0.5 as start. thats why it works. and u has a code
-just a bayer. maybe it useful for SSGI. but i think here should be other dithering. idk
-u use bayer for Volumetirc light, ssao, ssss 
-then i use filtering
-
-so
-render SSAO using dithering,
-vertical pass filter,
-horizontal pass filter,
-upsampling pass
 also make discard by sky
 if tex2D(WPDepth, uv).a == 0.00025 discard;
 
-
-ps this is implementation of LVutner's code from DX10/DX11 to DX9. LVutner is a S.T.A.L.K.E.R Anomaly developer
