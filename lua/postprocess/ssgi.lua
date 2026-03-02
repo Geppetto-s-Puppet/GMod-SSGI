@@ -24,19 +24,17 @@ list.Set("PostProcess", "SSGI", {
     end,
 })
 
-local mat = CreateMaterial("ssgi_effect", "screenspace_general", {
+local ssgi_mat = CreateMaterial("ssgi_effect", "screenspace_general", {
     ["$pixshader"]              = "ssgi_ps20b",
     ["$basetexture"]            = "_rt_FullFrameFB",
     ["$texture1"]               = "_rt_WPDepth",
     ["$texture2"]               = "_rt_NormalsTangents",
-    ["$texture3"]               = "_rt_ResolvedFullFrameDepth",
     ["$c0_x"]                   = "3.0",
     ["$c0_y"]                   = "0.05",
     ["$c1_x"]                   = "0",
     ["$linearread_basetexture"] = "1",
     ["$linearread_texture1"]    = "1",
     ["$linearread_texture2"]    = "0",
-    ["$linearread_texture3"]    = "1",
     ["$ignorez"]                = "1",
     ["$vertextransform"]        = "1",
 })
@@ -49,17 +47,17 @@ local ssgi_rt = GetRenderTargetEx("_rt_SSGI", ScrW()*0.5, ScrH()*0.5,
     IMAGE_FORMAT_RGBA16161616F
 )
 
+-- local function Draw()
+--     render.PushRenderTarget(ssgi_rt)
+--     render.Clear(0,0,0,0)
+--     render.SetMaterial(ssgi_mat)-- render.SetMaterial(ssgi_upsample)
+--     render.DrawScreenQuad()
+--     render.PopRenderTarget()
+-- end
 local function Draw()
-
-    render.PushRenderTarget(ssgi_rt)
-    render.Clear(0,0,0,0)
+    -- RTは一旦無視、シェーダーが動くか直接確認
     render.SetMaterial(ssgi_mat)
     render.DrawScreenQuad()
-    render.PopRenderTarget()
-
-    render.SetMaterial(ssgi_upsample)
-    render.DrawScreenQuad()
-
 end
 
 local function EnableSSGI()  hook.Add("PostDrawEffects",    "SSGI_Draw", Draw) end

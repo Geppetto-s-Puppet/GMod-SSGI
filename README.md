@@ -17,12 +17,55 @@ Subscribe/clone the dependencies, drop this addon in `garrysmod/addons/`, enable
 * **ficool2** (Source Shader SDK developer) — For the compiler and bin files (which are mixed into this repo)
 
 # 以下：俺用メモ（他人に読ます気ない）
+まずライブラリにどんなレンダーターゲットが含まれてるかっていうと、
 | バッファ名 | チャンネル／内容／エンコード |
 |---|---|
 | _rt_NormalsTangents | `.RG` 法線（オクタヘドロン符号化）　`.B` 接線（ダイヤモンド符号化）、`.A` 符号（右手系か否か） |
 | _rt_WPDepth | `.RGB` ワールド座標の逆数　`.A` 線形深度 |
 | _rt_Bumps | `.RGB` バンプマップ　`.A` スペキュラマスク |
 | _rt_FullFrameFB | ふっつーに入力として使うGMOD画面の入力（デフォのMSAAをオフっとけ、SMAAかFXAA推奨） |
+
+このうち、SSGIを構成するために最低限必要となるものは、
+| バッファ名 | vmtパラメータ | レジスタ番号 | 用途 |
+|---|---|---|---|
+| `_rt_FullFrameFB` | `$basetexture` | `s0` | 間接光の光源色サンプリング用 |
+| `_rt_WPDepth` | `$texture1` | `s1` | ワールド座標の復元 + スカイ判定用 |
+| `_rt_NormalsTangents` | `$texture2` | `s2` | ホライゾン積分の基準となる法線用 |
+
+下記の二つは、デコードに成功した。
+```hlsl
+#include "common.hlsl"
+
+float3 DecodeNormal(float2 f)
+{
+    f = f * 2.0 - 1.0;
+    float3 n = float3(f.x, f.y, 1.0 - abs(f.x) - abs(f.y));
+    float t = saturate(-n.z);
+    n.xy += n.xy >= 0.0 ? -t : t;
+    return normalize(n);
+}
+
+float4 main(PS_INPUT I) : COLOR
+{
+    float3 N = DecodeNormal(tex2D(Tex2, I.uv).rg);
+    return float4(N * 0.5 + 0.5, 1.0);  // 法線を色として表示
+}
+```
+![screenshot](img\DecodeNormal.jpg)
+```hlsl
+#include "common.hlsl"
+
+float4 main(PS_INPUT I) : COLOR
+{
+    float4 wpd       = tex2D(Tex1, I.uv);
+    float3 world_pos = 1.0 / wpd.xyz;   // ライブラリと同じ
+    float  depth     = wpd.a;
+
+    // depthをそのまま灰色で表示するだけ
+    return float4(depth, depth, depth, 1.0);
+}
+```
+![screenshot](img\DecodeDepth.jpg)
 
 ### 実装方法
 ぶっちゃけSSAOなら(影は0～1で収まるため)RGBA8888で十分だが、
@@ -37,7 +80,7 @@ local ssgi_rt = GetRenderTargetEx("_rt_SSGI", ScrW()*0.5,ScrH()*0.5,
     IMAGE_FORMAT_RGBA16161616F
 )
 ```
-理想は解像度を1/8にすることだが、アップスケーリングの手法が未知なので後回し
+理想は解像度を1/8にすることだが、アップスケーリングの手法が未知なため後回し。
 
 
 
