@@ -15,14 +15,5 @@ float4 main(PS_INPUT I) : COLOR
     float3 spos = 1.0 / swpd.xyz;
     float  dist = length(spos - ppos);
 
-    // depthの差で不連続を検出
-    float pdepth = wpd.a;
-    float sdepth = swpd.a;
-    float depth_diff = abs(pdepth - sdepth);
-
-    // 閾値より大きければそのサンプルをスキップ
-    if (depth_diff > 0.1) continue;
-
-
     return float4(dist * 0.001, dist * 0.001, dist * 0.001, 1.0);
 }
