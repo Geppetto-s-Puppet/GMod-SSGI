@@ -8,3 +8,7 @@ if "%~1"=="" (
 )
 
 bin\ShaderCompile.exe /O 3 -ver 20b -shaderpath "%cd%" %1
+
+echo.
+echo ---- ERROR CODE: %errorlevel% ----
+pause
