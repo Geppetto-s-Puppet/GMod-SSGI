@@ -93,6 +93,7 @@ local function Draw()
 end
 ```
 
+あとさ、`ps20b`をやめて`ps30`を使うわ。命名規則も統一した。
 
 
 
