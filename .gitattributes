@@ -1,6 +1,7 @@
 .gitattributes export-ignore
 README.md export-ignore
 bin/ export-ignore
+ref/ export-ignore
 
 build_common.hlsl export-ignore
 build_single_ps30.hlsl export-ignore
