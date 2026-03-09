@@ -13,8 +13,13 @@ Subscribe/clone the dependencies, drop this addon in `garrysmod/addons/`, enable
 
 ### Special Thanks to:
 * **Evgeny Akabenko** (GShader Library developer) — For providing almost all the valuable information
-* **LVutner** (S.T.A.L.K.E.R. Anomaly developer) — For the 0.5 upsampling code ported from DX10/DX11 to DX9
 * **ficool2** (Source Shader SDK developer) — For the compiler and bin files (which are mixed into this repo)
+* **LVutner** (S.T.A.L.K.E.R. Anomaly developer) — For the 0.5 upsampling code ported from DX10/DX11 to DX9
+
+
+
+
+
 
 # 以下：俺用メモ（他人に読ます気ない）
 まずライブラリにどんなレンダーターゲットが含まれてるかっていうと、
