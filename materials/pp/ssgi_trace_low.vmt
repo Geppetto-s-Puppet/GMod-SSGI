@@ -1,0 +1,18 @@
+screenspace_general
+{
+	$pixshader		"ssgi_trace_low_ps30"
+	$vertexshader	"pp_vs30"
+
+	$basetexture	"_rt_FullFrameFB"
+	$texture1		"_rt_WPDepth"
+	$texture2		"_rt_NormalsTangents"
+	$texture3		"texture_samples/ssgi_bluenoise"
+	$ignorez		1
+	$writealpha	1
+	$copyalpha	1
+
+	"<dx90"
+	{
+		$no_draw 1
+	}
+}
